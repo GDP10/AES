@@ -1,4 +1,4 @@
-package gdp10.aes;
+package net.robinjam.aes;
 
 public class Main {
 	public static void main(String[] args) {
