@@ -24,6 +24,20 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<groupId>org.apache.activemq.tooling</groupId>
+				<artifactId>activemq-maven-plugin</artifactId>
+				<version>5.10.0</version>
+			</plugin>
 		</plugins>
 	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-all</artifactId>
+			<version>5.10.0</version>
+		</dependency>
+	</dependencies>
 </project>
