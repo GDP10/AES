@@ -10,4 +10,4 @@ Test: `mvn test`
 
 Run: `mvn package exec:java`
 
-Launch ActiveMQ broker: `mvn activemq:run`
+Launch WSN broker: `mvn -Pbroker exec:java`
