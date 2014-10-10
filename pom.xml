@@ -57,6 +57,12 @@
 				</dependency>
 			</dependencies>
 		</profile>
+		<profile>
+			<id>client</id>
+			<properties>
+				<exec.mainClass>net.robinjam.aes.Client</exec.mainClass>
+			</properties>
+		</profile>
 	</profiles>
 
 	<build>
