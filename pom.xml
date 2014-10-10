@@ -19,6 +19,43 @@
 			<properties>
 				<exec.mainClass>org.apache.cxf.wsn.services.Service</exec.mainClass>
 			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>org.apache.cxf</groupId>
+					<artifactId>cxf-rt-frontend-jaxws</artifactId>
+					<version>3.0.1</version>
+				</dependency>
+
+				<dependency>
+					<groupId>org.apache.cxf</groupId>
+					<artifactId>cxf-rt-transports-http</artifactId>
+					<version>3.0.1</version>
+				</dependency>
+
+				<dependency>
+					<groupId>org.apache.cxf</groupId>
+					<artifactId>cxf-rt-transports-http-jetty</artifactId>
+					<version>3.0.1</version>
+				</dependency>
+
+				<dependency>
+					<groupId>org.apache.cxf</groupId>
+					<artifactId>cxf-rt-ws-addr</artifactId>
+					<version>3.0.1</version>
+				</dependency>
+
+				<dependency>
+					<groupId>org.apache.cxf</groupId>
+					<artifactId>cxf-rt-ws-policy</artifactId>
+					<version>3.0.1</version>
+				</dependency>
+
+				<dependency>
+					<groupId>org.apache.cxf.services.wsn</groupId>
+					<artifactId>cxf-services-wsn-core</artifactId>
+					<version>3.0.1</version>
+				</dependency>
+			</dependencies>
 		</profile>
 	</profiles>
 
@@ -38,38 +75,8 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-frontend-jaxws</artifactId>
-			<version>3.0.1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-transports-http</artifactId>
-			<version>3.0.1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-transports-http-jetty</artifactId>
-			<version>3.0.1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-ws-addr</artifactId>
-			<version>3.0.1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-ws-policy</artifactId>
-			<version>3.0.1</version>
-		</dependency>
-
-		<dependency>
 			<groupId>org.apache.cxf.services.wsn</groupId>
-			<artifactId>cxf-services-wsn-core</artifactId>
+			<artifactId>cxf-services-wsn-api</artifactId>
 			<version>3.0.1</version>
 		</dependency>
 	</dependencies>
