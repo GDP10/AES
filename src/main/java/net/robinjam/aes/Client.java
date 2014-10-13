@@ -12,7 +12,6 @@ import org.apache.cxf.wsn.client.Consumer;
 import org.apache.cxf.wsn.client.NotificationBroker;
 import org.apache.cxf.wsn.client.Subscription;
 import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 public class Client implements Consumer.Callback {
