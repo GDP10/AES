@@ -8,16 +8,15 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.cxf.wsn.client.Consumer;
 import org.apache.cxf.wsn.client.NotificationBroker;
 import org.apache.cxf.wsn.client.Subscription;
 import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
 import org.w3c.dom.Element;
 
-public class Client implements Consumer.Callback {
+public class Consumer implements org.apache.cxf.wsn.client.Consumer.Callback {
 
 	public static void main(String[] args) throws Exception {
-		Consumer consumer = new Consumer(new Client(), "http://localhost:9001/TestConsumer");
+		org.apache.cxf.wsn.client.Consumer consumer = new org.apache.cxf.wsn.client.Consumer(new Consumer(), "http://localhost:9001/TestConsumer");
 		NotificationBroker broker = new NotificationBroker("http://localhost:9000/wsn/NotificationBroker");
 		Subscription subscription = broker.subscribe(consumer, "LTFE");
 		Thread.sleep(1000 * 60);

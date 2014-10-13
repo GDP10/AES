@@ -7,14 +7,14 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-public class Main {
+public class Producer {
 
 	public static void main(String[] args) throws Exception {
 		NotificationBroker broker = new NotificationBroker("http://localhost:9000/wsn/NotificationBroker");
 		
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		dbf.setNamespaceAware(true);
-		Document doc = dbf.newDocumentBuilder().parse(Main.class.getResourceAsStream("/delta.xml"));
+		Document doc = dbf.newDocumentBuilder().parse(Producer.class.getResourceAsStream("/delta.xml"));
 		
 		NodeList events = doc.getElementsByTagNameNS("http://www.aixm.aero/schema/5.1/event", "Event");
 		for (int i = 0; i < events.getLength(); ++i) {
