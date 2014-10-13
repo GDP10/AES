@@ -19,7 +19,7 @@ public class Client implements Consumer.Callback {
 	public static void main(String[] args) throws Exception {
 		Consumer consumer = new Consumer(new Client(), "http://localhost:9001/TestConsumer");
 		NotificationBroker broker = new NotificationBroker("http://localhost:9000/wsn/NotificationBroker");
-		Subscription subscription = broker.subscribe(consumer, "MyTopic");
+		Subscription subscription = broker.subscribe(consumer, "LTFE");
 		Thread.sleep(1000 * 60);
 		subscription.unsubscribe();
 	}
