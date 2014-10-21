@@ -92,5 +92,17 @@
 			<artifactId>cxf-services-wsn-api</artifactId>
 			<version>3.0.1</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>info.cukes</groupId>
+			<artifactId>cucumber-java</artifactId>
+			<version>1.1.8</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>info.cukes</groupId>
+			<artifactId>cucumber-junit</artifactId>
+			<version>1.1.8</version>
+		</dependency>
 	</dependencies>
 </project>
