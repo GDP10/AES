@@ -36,7 +36,7 @@ public class Consumer implements org.apache.cxf.wsn.client.Consumer.Callback {
 		}
 	}
 	
-	private String getSource(Element doc) throws TransformerException {
+	public static String getSource(Element doc) throws TransformerException {
 		Transformer transformer = TransformerFactory.newInstance().newTransformer();
 		StringWriter writer = new StringWriter();
 		transformer.transform(new DOMSource(doc), new StreamResult(writer));
