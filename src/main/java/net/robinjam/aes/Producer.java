@@ -1,5 +1,7 @@
 package net.robinjam.aes;
 
+import java.io.FileInputStream;
+
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.cxf.wsn.client.NotificationBroker;
@@ -18,7 +20,7 @@ public class Producer {
 			
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			dbf.setNamespaceAware(true);
-			Document doc = dbf.newDocumentBuilder().parse(Producer.class.getResourceAsStream(args[1]));
+			Document doc = dbf.newDocumentBuilder().parse(new FileInputStream(args[1]));
 			System.out.println("Loaded XML delta from " + args[1]);
 			
 			NodeList events = doc.getElementsByTagNameNS("http://www.aixm.aero/schema/5.1/event", "Event");
