@@ -26,6 +26,7 @@ public class Producer {
 				Element event = (Element) events.item(i);
 				String topic = event.getElementsByTagNameNS("http://www.aixm.aero/schema/5.1/event", "location").item(0).getTextContent();
 				broker.notify(topic, event);
+				System.out.println("Sent event on topic " + topic);
 			}
 		}
 	}
