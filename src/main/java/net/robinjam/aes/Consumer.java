@@ -18,7 +18,7 @@ public class Consumer implements org.apache.cxf.wsn.client.Consumer.Callback {
 	public static void main(String[] args) throws Exception {
 		String[] topics;
 		if (args.length < 2) {
-			System.err.println("Usage: mvn -Pconsumer package exec:java -Dexec.args \"[Broker Address] [Subscription Topic]+\"");
+			System.err.println("Usage: mvn -Pconsumer package exec:java -Dexec.args=\"[Broker Address] [Subscription Topic]+\"");
 			System.exit(1);
 		} else {
 			String address = args[0];

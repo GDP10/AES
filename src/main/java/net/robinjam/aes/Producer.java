@@ -13,7 +13,7 @@ public class Producer {
 
 	public static void main(String[] args) throws Exception {
 		if(args.length != 2) {
-			System.err.println("Usage: mvn -Pproducer package exec:java -Dexec.args \"[Broker Address] [Delta Location]\"");
+			System.err.println("Usage: mvn -Pproducer package exec:java -Dexec.args=\"[Broker Address] [Delta Location]\"");
 			System.exit(1);
 		} else {
 			NotificationBroker broker = new NotificationBroker(args[0]);
