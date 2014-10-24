@@ -43,6 +43,7 @@ public class Consumer implements org.apache.cxf.wsn.client.Consumer.Callback {
 				subscriptions[i].unsubscribe();
 				System.out.println("Unsubscribed from " + topics[i]);
 			}
+			consumer.stop();
 		}
 	}
 
