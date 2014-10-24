@@ -16,34 +16,38 @@ import org.w3c.dom.Element;
 public class Consumer implements org.apache.cxf.wsn.client.Consumer.Callback {
 
 	public static void main(String[] args) throws Exception {
-		String[] topics;
+		final String[] topics;
 		if (args.length < 3) {
 			System.err.println("Usage: mvn -Pconsumer package exec:java -Dexec.args=\"[Broker Address] [Bind Address] [Subscription Topic]+\"");
 			System.exit(1);
 		} else {
 			String brokerAddress = args[0];
 			String bindAddress = args[1];
-			int topic_count = args.length - 2;
+			final int topic_count = args.length - 2;
 			topics = new String[topic_count];
 			for (int i = 2; i < args.length; i++) {
 				topics[i-2] = args[i];
 			}
 			
-			org.apache.cxf.wsn.client.Consumer consumer = new org.apache.cxf.wsn.client.Consumer(new Consumer(), bindAddress);
+			final org.apache.cxf.wsn.client.Consumer consumer = new org.apache.cxf.wsn.client.Consumer(new Consumer(), bindAddress);
 			NotificationBroker broker = new NotificationBroker(brokerAddress);
 			
-			Subscription[] subscriptions = new Subscription[topic_count];
+			final Subscription[] subscriptions = new Subscription[topic_count];
 			for(int i=0; i<topic_count; i++){
 				subscriptions[i] = broker.subscribe(consumer, topics[i]);
 				System.out.println("Subscribed to " + topics[i]);
 			}
 			
-			Thread.sleep(1000 * 60);
-			for(int i=0; i<topic_count; i++){
-				subscriptions[i].unsubscribe();
-				System.out.println("Unsubscribed from " + topics[i]);
-			}
-			consumer.stop();
+			Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+				@Override
+				public void run() {
+					for(int i=0; i<topic_count; i++){
+						try { subscriptions[i].unsubscribe(); } catch (Exception e) {}
+						System.out.println("Unsubscribed from " + topics[i]);
+					}
+					consumer.stop();
+				}
+			}));
 		}
 	}
 
