@@ -5,7 +5,7 @@ Feature: Send NOTAM data to consumer
 
    Scenario: Subscribe to topics, receive only relevant events
               Given a broker is running
-              When I start a consumer with topics "LTFE"
+              When I start a consumer with topics "NZTG"
               And I start a producer with xml "/delta.xml"
-              Then the consumer receives events with locations "LTFE"
+              Then the consumer receives events with locations "NZTG"
               And the consumer does not receive an event with location "IJKL"

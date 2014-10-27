@@ -8,6 +8,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import net.robinjam.aes.Stepdefs.NotificationHandler;
+
 import org.apache.cxf.wsn.client.NotificationBroker;
 import org.apache.cxf.wsn.client.Subscription;
 import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
@@ -27,9 +29,9 @@ import org.w3c.dom.Element;
 
 public class Consumer implements org.apache.cxf.wsn.client.Consumer.Callback {
 
-	public static org.apache.cxf.wsn.client.Consumer getNew(String brokerAddress, String bindAddress, final String[] topics) throws TopicExpressionDialectUnknownFault, InvalidFilterFault, TopicNotSupportedFault, UnacceptableInitialTerminationTimeFault, SubscribeCreationFailedFault, InvalidMessageContentExpressionFault, InvalidTopicExpressionFault, ResourceUnknownFault, UnsupportedPolicyRequestFault, UnrecognizedPolicyRequestFault, NotifyMessageNotSupportedFault, InvalidProducerPropertiesExpressionFault {
-
-		final org.apache.cxf.wsn.client.Consumer consumer = new org.apache.cxf.wsn.client.Consumer(new Consumer(), bindAddress);
+	public static org.apache.cxf.wsn.client.Consumer getNew(String brokerAddress, String bindAddress, final String[] topics, Stepdefs.NotificationHandler notificationHandler) throws TopicExpressionDialectUnknownFault, InvalidFilterFault, TopicNotSupportedFault, UnacceptableInitialTerminationTimeFault, SubscribeCreationFailedFault, InvalidMessageContentExpressionFault, InvalidTopicExpressionFault, ResourceUnknownFault, UnsupportedPolicyRequestFault, UnrecognizedPolicyRequestFault, NotifyMessageNotSupportedFault, InvalidProducerPropertiesExpressionFault {
+	
+		final org.apache.cxf.wsn.client.Consumer consumer = new org.apache.cxf.wsn.client.Consumer(new Consumer(notificationHandler), bindAddress);
 		NotificationBroker broker = new NotificationBroker(brokerAddress);
 		
 		final Subscription[] subscriptions = new Subscription[topics.length];
@@ -50,6 +52,11 @@ public class Consumer implements org.apache.cxf.wsn.client.Consumer.Callback {
 		}));
 		
 		return consumer;
+		
+	}
+	
+	public static org.apache.cxf.wsn.client.Consumer getNew(String brokerAddress, String bindAddress, final String[] topics) throws TopicExpressionDialectUnknownFault, InvalidFilterFault, TopicNotSupportedFault, UnacceptableInitialTerminationTimeFault, SubscribeCreationFailedFault, InvalidMessageContentExpressionFault, InvalidTopicExpressionFault, ResourceUnknownFault, UnsupportedPolicyRequestFault, UnrecognizedPolicyRequestFault, NotifyMessageNotSupportedFault, InvalidProducerPropertiesExpressionFault {
+		return getNew(brokerAddress, bindAddress, topics, new Stepdefs.NotificationHandler());
 	}
 	
 	public static void main(String[] args) throws Exception {
@@ -66,7 +73,7 @@ public class Consumer implements org.apache.cxf.wsn.client.Consumer.Callback {
 				topics[i-2] = args[i];
 			}
 			
-			final org.apache.cxf.wsn.client.Consumer consumer = new org.apache.cxf.wsn.client.Consumer(new Consumer(), bindAddress);
+			final org.apache.cxf.wsn.client.Consumer consumer = new org.apache.cxf.wsn.client.Consumer(new Consumer(new NotificationHandler()), bindAddress);
 			NotificationBroker broker = new NotificationBroker(brokerAddress);
 			
 			final Subscription[] subscriptions = new Subscription[topic_count];
@@ -88,11 +95,18 @@ public class Consumer implements org.apache.cxf.wsn.client.Consumer.Callback {
 		}
 	}
 
+	private NotificationHandler notificationHandler;
+	
+	public Consumer(NotificationHandler notificationHandler) {
+		this.notificationHandler = notificationHandler;
+	}
+
 	@Override
 	public void notify(NotificationMessageHolderType message) {
 		Object o = message.getMessage().getAny();
 		if (o instanceof Element) {
 			try {
+				notificationHandler.notify((Element) o);
 				System.out.println(getSource((Element) o));
 			} catch (TransformerException e) {
 				// TODO Auto-generated catch block
