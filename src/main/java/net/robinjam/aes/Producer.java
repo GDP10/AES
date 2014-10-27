@@ -3,6 +3,7 @@ package net.robinjam.aes;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -43,11 +44,10 @@ public class Producer {
 		broker = new NotificationBroker(address);
 	}
 	
-	public void sendXML(String xmlFile) throws FileNotFoundException, SAXException, IOException, ParserConfigurationException {
+	public void sendXML(InputStream inputStream) throws FileNotFoundException, SAXException, IOException, ParserConfigurationException {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		dbf.setNamespaceAware(true);
-		Document doc = dbf.newDocumentBuilder().parse(new FileInputStream(xmlFile));
-		System.out.println("Loaded XML delta from " + xmlFile);
+		Document doc = dbf.newDocumentBuilder().parse(inputStream);
 		
 		NodeList events = doc.getElementsByTagNameNS("http://www.aixm.aero/schema/5.1/event", "Event");
 		for (int i = 0; i < events.getLength(); ++i) {
