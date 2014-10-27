@@ -14,8 +14,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
-import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType.Message;
 import org.w3c.dom.Document;
 
 public class ConsumerTest {
@@ -34,23 +32,6 @@ public class ConsumerTest {
 
 	@After
 	public void tearDown() throws Exception {
-	}
-	
-	@Test
-	public void testNotify() throws ParserConfigurationException {
-		Consumer consumer = new Consumer();
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		System.setOut(new PrintStream(out));
-		NotificationMessageHolderType messageHolder = new NotificationMessageHolderType();
-		Message message = new Message();
-		Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-		doc.appendChild(doc.createElement("test"));
-		message.setAny(doc.getDocumentElement());
-		messageHolder.setMessage(message );
-		consumer.notify(messageHolder);
-		String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><test/>\n";
-		String actual = out.toString();
-		assertEquals(expected, actual);
 	}
 
 	@Test

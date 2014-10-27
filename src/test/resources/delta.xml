@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:FeatureCollection xmlns="http://www.aixm.aero/schema/5.1/event" xmlns:wfs="http://www.opengis.net/wfs/2.0">
+	<wfs:member>
+		<aixm-message:AIXMBasicMessage xmlns:aixm-message="http://www.aixm.aero/schema/5.1/message">
+			<Event>
+				<timeSlice>
+					<EventTimeSlice>
+						<textNOTAM>
+							<NOTAM>
+								<location>ABCD</location>
+							</NOTAM>
+						</textNOTAM>
+					</EventTimeSlice>
+				</timeSlice>
+			</Event>
+			<Event>
+				<timeSlice>
+					<EventTimeSlice>
+						<textNOTAM>
+							<NOTAM>
+								<location>EFGH</location>
+							</NOTAM>
+						</textNOTAM>
+					</EventTimeSlice>
+				</timeSlice>
+			</Event>
+		</aixm-message:AIXMBasicMessage>
+	</wfs:member>
+</wfs:FeatureCollection>
+
