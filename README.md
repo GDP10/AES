@@ -13,6 +13,7 @@ Build targets
 Git workflow
 ------------
 
+* Every commit in the `master` branch should compile and the tests should pass without error
 * Work directly in `master` for small changes
 * If your copy of `master` diverges from the origin, rebase your changes:
   * `git pull --rebase`
