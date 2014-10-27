@@ -75,6 +75,7 @@ public class Stepdefs {
 		
 		producer.sendXML(Stepdefs.class.getResourceAsStream("/delta.xml"));
 		
+		Thread.sleep(1000);
 	}
 
 	@Then("^the consumer receives events with locations \"(.+)\"$")
@@ -84,13 +85,18 @@ public class Stepdefs {
 		for(int i = 0; i < topics.size(); i++) {
 			
 			String topic = topics.get(i);
+			boolean found = false;
 			
 			for(Element element:notificationHandler.notifications) {
 				NodeList elementsByTagName = element.getElementsByTagNameNS("http://www.aixm.aero/schema/5.1/event", "location");
 				
-				org.junit.Assert.assertEquals(topic, elementsByTagName.item(0).getTextContent());
-					
+				if(topic.equals(elementsByTagName.item(0).getTextContent())) {
+					found = true;
+					break;
+				}
 			}
+			
+			org.junit.Assert.assertTrue(found);
 		}
 		
 	}
@@ -102,13 +108,18 @@ public class Stepdefs {
 		for(int i = 0; i < topics.size(); i++) {
 			
 			String topic = topics.get(i);
+			boolean found = false;
 			
 			for(Element element:notificationHandler.notifications) {
 				NodeList elementsByTagName = element.getElementsByTagNameNS("http://www.aixm.aero/schema/5.1/event", "location");
 				
-				org.junit.Assert.assertNotEquals(topic, elementsByTagName.item(0).getTextContent());
-					
+				if(topic.equals(elementsByTagName.item(0).getTextContent())) {
+					found = true;
+					break;
+				}
 			}
+			
+			org.junit.Assert.assertFalse(found);
 		}
 	}
 	
