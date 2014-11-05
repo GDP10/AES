@@ -19,7 +19,7 @@ Git workflow
 * Work directly in `master` for small changes
 * If your copy of `master` diverges from the origin, rebase your changes:
   * `git pull --rebase`
-* Implement large changes in a feature branch named "<your username>/<your feature>" (e.g. robinjam/testfeature):
+* Implement large changes in a feature branch named `<your username>/<your feature>` (e.g. `robinjam/testfeature`):
   * `git checkout -b <your username>/<your feature>`
 * Once the feature is complete, rebase your branch onto master and perform a non-fast-forward merge:
   * `git checkout master`
