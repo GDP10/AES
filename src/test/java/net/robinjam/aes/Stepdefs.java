@@ -1,11 +1,7 @@
 package net.robinjam.aes;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
-import junit.framework.Assert;
 
 import org.apache.cxf.wsn.services.Service;
 import org.w3c.dom.Element;
