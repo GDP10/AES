@@ -1,12 +1,8 @@
 package net.robinjam.aes;
 
-import java.io.StringWriter;
-
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
+
+import net.robinjam.util.XMLUtils;
 
 import org.apache.cxf.wsn.client.NotificationBroker;
 import org.apache.cxf.wsn.client.Subscription;
@@ -75,7 +71,7 @@ public class Consumer implements org.apache.cxf.wsn.client.Consumer.Callback {
 				@Override
 				public void notify(Element element) {
 					try {
-						System.out.println(getSource(element));
+						System.out.println(XMLUtils.getSource(element));
 					} catch (TransformerException e) {
 						e.printStackTrace();
 						System.exit(1);
@@ -116,12 +112,5 @@ public class Consumer implements org.apache.cxf.wsn.client.Consumer.Callback {
 		if (o instanceof Element) {
 			callback.notify((Element) o);
 		}
-	}
-	
-	public static String getSource(Element doc) throws TransformerException {
-		Transformer transformer = TransformerFactory.newInstance().newTransformer();
-		StringWriter writer = new StringWriter();
-		transformer.transform(new DOMSource(doc), new StreamResult(writer));
-		return writer.getBuffer().toString();
 	}
 }

@@ -6,6 +6,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import net.robinjam.util.XMLUtils;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -36,7 +38,7 @@ public class ConsumerTest {
 		Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
 		doc.appendChild(doc.createElement("test"));
 		String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><test/>";
-		String actual = Consumer.getSource(doc.getDocumentElement());
+		String actual = XMLUtils.getSource(doc.getDocumentElement());
 		assertEquals(expected, actual);
 	}
 
