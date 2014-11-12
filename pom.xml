@@ -10,8 +10,23 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<exec.mainClass>net.robinjam.aes.Main</exec.mainClass>
 	</properties>
+	
+	<profiles>
+		<profile>
+			<id>producer</id>
+			<properties>
+				<exec.mainClass>net.robinjam.aes.Producer</exec.mainClass>
+			</properties>
+		</profile>
+		
+		<profile>
+			<id>consumer</id>
+			<properties>
+				<exec.mainClass>net.robinjam.aes.Consumer</exec.mainClass>
+			</properties>
+		</profile>
+	</profiles>
 
 	<build>
 		<plugins>
