@@ -18,7 +18,7 @@ public class Consumer {
 		connection.start();
 		Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 		Destination destination = session.createQueue("AES");
-		MessageConsumer consumer = session.createConsumer(destination, "time > 30");
+		MessageConsumer consumer = session.createConsumer(destination, "startTime > 30");
 		Message message = consumer.receive(60000);
 		
 		if (message instanceof TextMessage) {
