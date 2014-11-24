@@ -1,10 +1,5 @@
 package net.robinjam.aes;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 import javax.jms.Connection;
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -13,6 +8,7 @@ import javax.jms.MessageConsumer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import javax.security.auth.callback.Callback;
+import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 
@@ -46,13 +42,10 @@ public class Consumer implements Callback {
 		long startTimeSub, endTimeSub;
 		
 		try {
-			Date startDate = new SimpleDateFormat("yyyy-dd-MM'T'HH:mm:ss", Locale.ENGLISH).parse(startDateString);
-			Date endDate = new SimpleDateFormat("yyyy-dd-MM'T'HH:mm:ss", Locale.ENGLISH).parse(endDateString);
-			// time is given in milliseconds, divide by 1000 to get a unix timestamp in seconds
-			startTimeSub = startDate.getTime() / 1000;
-			endTimeSub = endDate.getTime() / 1000;
+			startTimeSub = javax.xml.datatype.DatatypeFactory.newInstance().newXMLGregorianCalendar(startDateString).toGregorianCalendar().getTimeInMillis() / 1000;
+			endTimeSub = javax.xml.datatype.DatatypeFactory.newInstance().newXMLGregorianCalendar(endDateString).toGregorianCalendar().getTimeInMillis() / 1000;
 		}
-		catch(ParseException e) {
+		catch(DatatypeConfigurationException e) {
 			startTimeSub = -1;
 			endTimeSub = -1;
 		}

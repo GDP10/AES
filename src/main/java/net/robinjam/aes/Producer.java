@@ -18,6 +18,7 @@ import javax.jms.JMSException;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -27,6 +28,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
@@ -60,20 +62,18 @@ public class Producer {
 			long startTime, endTime;
 			
 			try {
-				Date startDate = new SimpleDateFormat("yyyy-dd-MM'T'HH:mm:ss", Locale.ENGLISH).parse(XMLParser.parseElement(inputStream.getCopy(), "http://www.opengis.net/gml/3.2", "beginPosition").get(0).getTextContent());
-				// time is given in milliseconds, divide by 1000 to get a unix timestamp in seconds
-				startTime = startDate.getTime() / 1000;
+				String beginPoisitionString = XMLParser.parseElement(inputStream.getCopy(), "http://www.opengis.net/gml/3.2", "beginPosition").get(0).getTextContent();
+				startTime = javax.xml.datatype.DatatypeFactory.newInstance().newXMLGregorianCalendar(beginPoisitionString).toGregorianCalendar().getTimeInMillis() / 1000;
 			}
-			catch(ParseException e) {
+			catch(DatatypeConfigurationException e) {
 				startTime = -1;
 			}
 			
 			try {
-				Date endDate = new SimpleDateFormat("yyyy-dd-MM'T'HH:mm:ss", Locale.ENGLISH).parse(XMLParser.parseElement(inputStream.getCopy(), "http://www.opengis.net/gml/3.2", "endPosition").get(0).getTextContent());
-				// time is given in milliseconds, divide by 1000 to get a unix timestamp in seconds
-				endTime = endDate.getTime() / 1000;
+				String endPositionString = XMLParser.parseElement(inputStream.getCopy(), "http://www.opengis.net/gml/3.2", "endPosition").get(0).getTextContent();
+				endTime = javax.xml.datatype.DatatypeFactory.newInstance().newXMLGregorianCalendar(endPositionString).toGregorianCalendar().getTimeInMillis() / 1000;
 			}
-			catch(ParseException e) {
+			catch(DatatypeConfigurationException e) {
 				endTime = -1;
 			}
 			
