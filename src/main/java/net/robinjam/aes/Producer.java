@@ -1,15 +1,11 @@
 package net.robinjam.aes;
 
-	import java.io.ByteArrayInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import javax.jms.Connection;
 import javax.jms.DeliveryMode;
@@ -28,10 +24,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
-
 
 public class Producer {
 	
