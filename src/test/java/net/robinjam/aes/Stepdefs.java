@@ -25,35 +25,30 @@ public class Stepdefs {
 	private BrokerService broker;
 	
 	private static class TestCallback implements Callback {
-		
 		public List<String> messages = new ArrayList<String>();
 		
 		@Override
 		public void recieveMessage(TextMessage message) throws JMSException {
 			this.messages.add(message.getText());
 		}
-		
 	}
 	
 	@Given("^a broker is running$")
 	public void broker_is_running() throws Exception {
-		
 		broker = new BrokerService();
 		broker.addConnector("tcp://localhost:61616");
 		broker.start();
-		
 	}
 	
 	@When("^I start a consumer with a temporal range of \"(.+)\"$")
 	public void start_a_consumer(final List<String> consumerTimes) throws JMSException {
-		
 		Runnable consumerRunnable = new Runnable() {
 			
 			@Override
 			public void run() {
 				consumerCallback = new TestCallback();
 				try {
-					Consumer consumer = new Consumer(consumerCallback, BROKER_ADDRESS, consumerTimes.get(0), consumerTimes.get(1));
+					new Consumer(consumerCallback, BROKER_ADDRESS, consumerTimes.get(0), consumerTimes.get(1));
 				} catch (JMSException e) {
 					e.printStackTrace();
 				}
@@ -66,14 +61,11 @@ public class Stepdefs {
 	
 	@And("^I start a producer with xml \"(.+)\"$")
 	public void start_a_producer(List<String> notamFiles) throws Exception {
-		
-		Producer producer = new Producer(BROKER_ADDRESS, Stepdefs.class.getResourceAsStream(notamFiles.get(0)));
-
+		new Producer(BROKER_ADDRESS, Stepdefs.class.getResourceAsStream(notamFiles.get(0)));
 	}
 
 	@Then("^the consumer receives events with location \"(.+)\"$")
 	public void consumer_receives_events(List<String> locations) throws Exception {
-	
 		String messageFound;
 		
 		for(String location:locations) {
@@ -89,28 +81,21 @@ public class Stepdefs {
 			
 			Assert.assertEquals(location, messageFound);
 		}
-		
 	}
 	
 	@And("^the consumer does not receive an event with location \"(.+)\"$")
 	public void consumer_doesnt_receive_event(List<String> locations) throws Exception {
-
 		String messageFound;
 		
 		for(String location:locations) {
-			
 			messageFound = "";
 			
 			for(String message:consumerCallback.messages) {
-				
 				if(message.contains(location))
 					messageFound = location;
-				
 			}
-			
 			Assert.assertNotEquals(location, messageFound);
 		}
-		
 	}
 	
 	@After
