@@ -30,11 +30,10 @@ import org.xml.sax.SAXException;
 public class Producer {
 	
 	public static void main(String[] args) throws JMSException, SAXException, IOException, ParserConfigurationException, TransformerException {
-		Producer producer = new Producer(args[0], Producer.class.getResourceAsStream(args[1]));
+		new Producer(args[0], Producer.class.getResourceAsStream(args[1]));
 	}
 	
 	public Producer(String brokerAddress, InputStream inputStreamMaster) throws JMSException, SAXException, IOException, ParserConfigurationException, TransformerException {
-		
 		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(brokerAddress);
 		Connection connection = connectionFactory.createConnection();
 		connection.start();
@@ -60,7 +59,7 @@ public class Producer {
 				startTime = javax.xml.datatype.DatatypeFactory.newInstance().newXMLGregorianCalendar(beginPoisitionString).toGregorianCalendar().getTimeInMillis() / 1000;
 			}
 			catch(DatatypeConfigurationException e) {
-				startTime = -1;
+				startTime = Integer.MIN_VALUE;
 			}
 			
 			try {
@@ -68,7 +67,7 @@ public class Producer {
 				endTime = javax.xml.datatype.DatatypeFactory.newInstance().newXMLGregorianCalendar(endPositionString).toGregorianCalendar().getTimeInMillis() / 1000;
 			}
 			catch(DatatypeConfigurationException e) {
-				endTime = -1;
+				endTime = Integer.MAX_VALUE;
 			}
 			
 			
@@ -83,11 +82,9 @@ public class Producer {
 		
 		session.close();
 		connection.close();
-	
 	}
 	
 	private static String getElementAsString(Element element) throws TransformerException {
-
 		TransformerFactory transFactory = TransformerFactory.newInstance();
 		Transformer transformer = transFactory.newTransformer();
 		StringWriter buffer = new StringWriter();
