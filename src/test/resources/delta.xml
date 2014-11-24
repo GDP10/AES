@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:FeatureCollection xmlns="http://www.aixm.aero/schema/5.1/event" xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:time="http://www.opengis.net/gml/3.2">
+	<wfs:member>
+		<aixm-message:AIXMBasicMessage xmlns:aixm-message="http://www.aixm.aero/schema/5.1/message">
+			<Event>
+				<timeSlice>
+					<EventTimeSlice>
+						<time:validTime>
+							<time:TimePeriod time:id="E1">
+								<time:beginPosition>2014-06-09T00:00:00.000Z</time:beginPosition>
+								<time:endPosition>2014-06-09T01:00:00.000Z</time:endPosition>
+							</time:TimePeriod>
+						</time:validTime>
+						<textNOTAM>
+							<NOTAM>
+								<location>ABCD</location>
+							</NOTAM>
+						</textNOTAM>
+					</EventTimeSlice>
+				</timeSlice>
+			</Event>
+			<Event>
+				<timeSlice>
+					<EventTimeSlice>
+						<time:validTime>
+							<time:TimePeriod time:id="E2">
+								<time:beginPosition>2014-06-09T01:01:00.000Z</time:beginPosition>
+								<time:endPosition>2014-06-09T02:00:00.000Z</time:endPosition>
+							</time:TimePeriod>
+						</time:validTime>
+						<textNOTAM>
+							<NOTAM>
+								<location>EFGH</location>
+							</NOTAM>
+						</textNOTAM>
+					</EventTimeSlice>
+				</timeSlice>
+			</Event>
+		</aixm-message:AIXMBasicMessage>
+	</wfs:member>
+</wfs:FeatureCollection>

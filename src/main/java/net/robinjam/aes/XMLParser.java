@@ -34,4 +34,23 @@ public class XMLParser {
 		
 	}
 	
+	public static List<Element> parseElement(InputStream inputStream, String namespace, String name) throws SAXException, IOException, ParserConfigurationException {
+		
+		List<Element> notams = new ArrayList<Element>();
+		
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		dbf.setNamespaceAware(true);
+		Document doc = dbf.newDocumentBuilder().parse(inputStream);
+		
+		NodeList events = doc.getElementsByTagNameNS(namespace, name);
+	
+		for (int i = 0; i < events.getLength(); ++i) {
+			Element event = (Element) events.item(i);
+			notams.add(event);
+		}
+		
+		return notams;
+		
+	}
+	
 }

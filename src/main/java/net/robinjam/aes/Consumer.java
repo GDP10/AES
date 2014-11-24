@@ -7,26 +7,73 @@ import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+import javax.security.auth.callback.Callback;
+import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 
-public class Consumer {
+public class Consumer implements Callback {
 	
 	public static void main(String[] args) throws JMSException {
-		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(args[0]);
+		new Consumer(args[0], args[1], args[2]);
+	}
+	
+	private Callback callback;
+	
+	public Consumer(Callback callback, String brokerAddress, String startDateString, String endDateString) throws JMSException {
+		this.callback = callback;
+		this.startListening(brokerAddress, startDateString, endDateString);
+	}
+	
+	public Consumer(String brokerAddress, String startDateString, String endDateString) throws JMSException {
+		this.callback = new SystemOutCallback();
+		this.startListening(brokerAddress, startDateString, endDateString);
+	}
+	
+	private void startListening(String brokerAddress, String startDateString, String endDateString) throws JMSException {
+		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(brokerAddress);
 		Connection connection = connectionFactory.createConnection();
 		connection.start();
 		Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 		Destination destination = session.createQueue("AES");
-		MessageConsumer consumer = session.createConsumer(destination, "time > 30");
+		
+		long startTimeSub, endTimeSub;
+		
+		try {
+			startTimeSub = javax.xml.datatype.DatatypeFactory.newInstance().newXMLGregorianCalendar(startDateString).toGregorianCalendar().getTimeInMillis() / 1000;
+		}
+		catch(DatatypeConfigurationException e) {
+			startTimeSub = Integer.MIN_VALUE;
+		}
+		
+		try {
+			endTimeSub = javax.xml.datatype.DatatypeFactory.newInstance().newXMLGregorianCalendar(endDateString).toGregorianCalendar().getTimeInMillis() / 1000;
+		}
+		catch(DatatypeConfigurationException e) {
+			endTimeSub = Integer.MAX_VALUE;
+		}
+		
+		MessageConsumer consumer = session.createConsumer(destination, "startTime < " + endTimeSub + " AND endTime > " + startTimeSub);
+		
 		Message message = consumer.receive(60000);
 		
 		if (message instanceof TextMessage) {
-			System.out.println(((TextMessage) message).getText());
+			callback.recieveMessage((TextMessage) message);
 		}
 		
 		consumer.close();
 		session.close();
 		connection.close();
+	}
+	
+	public static interface Callback {
+		public void recieveMessage(TextMessage message) throws JMSException;
+	}
+	
+	private static class SystemOutCallback implements Callback {
+		@Override
+		public void recieveMessage(TextMessage message) throws JMSException {
+			System.out.println(message.getText());
+		}
 	}
 }
