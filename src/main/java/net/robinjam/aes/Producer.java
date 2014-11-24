@@ -55,8 +55,8 @@ public class Producer {
 			long startTime, endTime;
 			
 			try {
-				String beginPoisitionString = XMLParser.parseElement(inputStream.getCopy(), "http://www.opengis.net/gml/3.2", "beginPosition").get(0).getTextContent();
-				startTime = javax.xml.datatype.DatatypeFactory.newInstance().newXMLGregorianCalendar(beginPoisitionString).toGregorianCalendar().getTimeInMillis() / 1000;
+				String beginPositionString = XMLParser.parseElement(inputStream.getCopy(), "http://www.opengis.net/gml/3.2", "beginPosition").get(0).getTextContent();
+				startTime = javax.xml.datatype.DatatypeFactory.newInstance().newXMLGregorianCalendar(beginPositionString).toGregorianCalendar().getTimeInMillis() / 1000;
 			}
 			catch(DatatypeConfigurationException e) {
 				startTime = Integer.MIN_VALUE;
