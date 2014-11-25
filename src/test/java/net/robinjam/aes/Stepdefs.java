@@ -59,6 +59,25 @@ public class Stepdefs {
 		consumerThread.start();
 	}
 	
+	@When("^I start a consumer with a latitude of \"(.*?)\", a longitude of \"(.*?)\" and a range of \"(.*?)\"$")
+	public void start_a_consumer(final String lat, final String lon, final String range) throws JMSException {
+		Runnable consumerRunnable = new Runnable() {
+			
+			@Override
+			public void run() {
+				consumerCallback = new TestCallback();
+				try {
+					new Consumer(consumerCallback, BROKER_ADDRESS, lat, lon, range);
+				} catch (JMSException e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		
+		Thread consumerThread = new Thread(consumerRunnable);
+		consumerThread.start();
+	}
+	
 	@And("^I start a producer with xml \"(.+)\"$")
 	public void start_a_producer(List<String> notamFiles) throws Exception {
 		new Producer(BROKER_ADDRESS, Stepdefs.class.getResourceAsStream(notamFiles.get(0)));

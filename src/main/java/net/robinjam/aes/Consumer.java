@@ -30,6 +30,16 @@ public class Consumer implements Callback {
 		this.startListening(brokerAddress, startDateString, endDateString);
 	}
 	
+	public Consumer(Callback callback, String brokerAddress, String latString, String lonString, String rangeString) throws JMSException {
+		this.callback = callback;
+		this.startListening(brokerAddress, latString, lonString, rangeString);
+	}
+	
+	public Consumer(String brokerAddress, String latString, String lonString, String rangeString) throws JMSException {
+		this.callback = new SystemOutCallback();
+		this.startListening(brokerAddress, latString, lonString, rangeString);
+	}
+	
 	private void startListening(String brokerAddress, String startDateString, String endDateString) throws JMSException {
 		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(brokerAddress);
 		Connection connection = connectionFactory.createConnection();
@@ -54,6 +64,32 @@ public class Consumer implements Callback {
 		}
 		
 		MessageConsumer consumer = session.createConsumer(destination, "startTime < " + endTimeSub + " AND endTime > " + startTimeSub);
+		
+		Message message = consumer.receive(60000);
+		
+		if (message instanceof TextMessage) {
+			callback.recieveMessage((TextMessage) message);
+		}
+		
+		consumer.close();
+		session.close();
+		connection.close();
+	}
+	
+	private void startListening(String brokerAddress, String latString, String lonString, String rangeString) throws JMSException {
+		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(brokerAddress);
+		Connection connection = connectionFactory.createConnection();
+		connection.start();
+		Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+		Destination destination = session.createQueue("AES");
+		
+		double targetLat = Double.valueOf(latString);
+		double targetLon = Double.valueOf(lonString);
+		double range = Double.valueOf(rangeString);
+		double squaredRange = Math.pow(range, 2.0);
+		
+		MessageConsumer consumer = session.createConsumer(destination,
+			"((" + targetLat + "-lat)*(" + targetLat + "-lat))+((" + targetLon + "-lon)*(" + targetLon + "-lon))<" + squaredRange);
 		
 		Message message = consumer.receive(60000);
 		
