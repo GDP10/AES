@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.List;
+import java.util.Random;
 
 import javax.jms.Connection;
 import javax.jms.DeliveryMode;
@@ -71,9 +72,14 @@ public class Producer {
 			}
 			
 			
-			// TODO Get lat,lon,time from Element
-			message.setIntProperty("lat", 90);
-			message.setIntProperty("lon", 33);
+			// TODO Get lat,lon from Element
+			if(i == 0) {
+			    message.setDoubleProperty("lat", 0.51);
+			    message.setDoubleProperty("lon", 0.51);
+			} else {
+			    message.setDoubleProperty("lat", -1.0);
+			    message.setDoubleProperty("lon", -1.0);
+			}
 			message.setLongProperty("startTime", startTime);
 			message.setLongProperty("endTime", endTime);
 			
