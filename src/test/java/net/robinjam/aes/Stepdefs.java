@@ -28,7 +28,7 @@ public class Stepdefs {
 		public List<String> messages = new ArrayList<String>();
 		
 		@Override
-		public void recieveMessage(TextMessage message) throws JMSException {
+		public void receiveMessage(TextMessage message) throws JMSException {
 			this.messages.add(message.getText());
 		}
 	}
