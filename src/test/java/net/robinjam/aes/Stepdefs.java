@@ -78,6 +78,25 @@ public class Stepdefs {
 		consumerThread.start();
 	}
 	
+	@When("^I start a consumer with a bounding box with top left co-ordinates \"(.*?)\",\"(.*?)\" and bottom right co-ordinates \"(.*?)\",\"(.*?)\"$")
+	public void start_a_consumer(final String lat1, final String lon1, final String lat2, final String lon2) throws JMSException {
+		Runnable consumerRunnable = new Runnable() {
+			
+			@Override
+			public void run() {
+				consumerCallback = new TestCallback();
+				try {
+					new Consumer(consumerCallback, BROKER_ADDRESS, lat1, lon1, lat2, lon2);
+				} catch (JMSException e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		
+		Thread consumerThread = new Thread(consumerRunnable);
+		consumerThread.start();
+	}
+	
 	@And("^I start a producer with xml \"(.+)\"$")
 	public void start_a_producer(List<String> notamFiles) throws Exception {
 		new Producer(BROKER_ADDRESS, Stepdefs.class.getResourceAsStream(notamFiles.get(0)));

@@ -40,6 +40,16 @@ public class Consumer implements Callback {
 		this.startListening(brokerAddress, latString, lonString, rangeString);
 	}
 	
+	public Consumer(Callback callback, String brokerAddress, String lat1String, String lon1String, String lat2String, String lon2String) throws JMSException {
+		this.callback = callback;
+		this.startListening(brokerAddress, lat1String, lon1String, lat2String, lon2String);
+	}
+	
+	public Consumer(String brokerAddress, String lat1String, String lon1String, String lat2String, String lon2String) throws JMSException {
+		this.callback = new SystemOutCallback();
+		this.startListening(brokerAddress, lat1String, lon1String, lat2String, lon2String);
+	}
+	
 	private void startListening(String brokerAddress, String startDateString, String endDateString) throws JMSException {
 		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(brokerAddress);
 		Connection connection = connectionFactory.createConnection();
@@ -97,6 +107,31 @@ public class Consumer implements Callback {
 			callback.recieveMessage((TextMessage) message);
 		}
 		
+		consumer.close();
+		session.close();
+		connection.close();
+	}
+	
+	private void startListening(String brokerAddress, String lat1String, String lon1String, String lat2String, String lon2String) throws JMSException {
+		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(brokerAddress);
+		Connection connection = connectionFactory.createConnection();
+		connection.start();
+		Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+		Destination destination = session.createQueue("AES");
+
+		double lat1 = Double.valueOf(lat1String);
+		double lon1 = Double.valueOf(lon1String);
+		double lat2 = Double.valueOf(lat2String);
+		double lon2 = Double.valueOf(lon2String);
+
+		MessageConsumer consumer = session.createConsumer(destination, "lat>" + lat1 + " AND lat<" + lat2 + " AND lon>" + lon1 + " AND lon<" + lon2);
+
+		Message message = consumer.receive(60000);
+
+		if (message instanceof TextMessage) {
+			callback.recieveMessage((TextMessage) message);
+		}
+
 		consumer.close();
 		session.close();
 		connection.close();
