@@ -1,116 +1,122 @@
 package net.robinjam.aes;
 
-import javax.xml.transform.TransformerException;
+import javax.jms.Connection;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.jms.Session;
+import javax.jms.TextMessage;
+import javax.security.auth.callback.Callback;
+import javax.xml.datatype.DatatypeConfigurationException;
 
-import net.robinjam.util.XMLUtils;
+import org.apache.activemq.ActiveMQConnectionFactory;
 
-import org.apache.cxf.wsn.client.NotificationBroker;
-import org.apache.cxf.wsn.client.Subscription;
-import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
-import org.oasis_open.docs.wsn.bw_2.InvalidFilterFault;
-import org.oasis_open.docs.wsn.bw_2.InvalidMessageContentExpressionFault;
-import org.oasis_open.docs.wsn.bw_2.InvalidProducerPropertiesExpressionFault;
-import org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault;
-import org.oasis_open.docs.wsn.bw_2.NotifyMessageNotSupportedFault;
-import org.oasis_open.docs.wsn.bw_2.SubscribeCreationFailedFault;
-import org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault;
-import org.oasis_open.docs.wsn.bw_2.TopicNotSupportedFault;
-import org.oasis_open.docs.wsn.bw_2.UnacceptableInitialTerminationTimeFault;
-import org.oasis_open.docs.wsn.bw_2.UnrecognizedPolicyRequestFault;
-import org.oasis_open.docs.wsn.bw_2.UnsupportedPolicyRequestFault;
-import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
-import org.w3c.dom.Element;
-
-public class Consumer implements org.apache.cxf.wsn.client.Consumer.Callback {
+public class Consumer implements Callback {
 	
-	public interface Callback {
-		public void notify(Element element);
-	}
-
-	public static org.apache.cxf.wsn.client.Consumer getNew(String brokerAddress, String bindAddress, final String[] topics, Callback callback) throws TopicExpressionDialectUnknownFault, InvalidFilterFault, TopicNotSupportedFault, UnacceptableInitialTerminationTimeFault, SubscribeCreationFailedFault, InvalidMessageContentExpressionFault, InvalidTopicExpressionFault, ResourceUnknownFault, UnsupportedPolicyRequestFault, UnrecognizedPolicyRequestFault, NotifyMessageNotSupportedFault, InvalidProducerPropertiesExpressionFault {
-	
-		final org.apache.cxf.wsn.client.Consumer consumer = new org.apache.cxf.wsn.client.Consumer(new Consumer(callback), bindAddress);
-		NotificationBroker broker = new NotificationBroker(brokerAddress);
-		
-		final Subscription[] subscriptions = new Subscription[topics.length];
-		for(int i=0; i< topics.length; i++){
-			subscriptions[i] = broker.subscribe(consumer, topics[i]);
-			System.out.println("Subscribed to " + topics[i]);
-		}
-		
-		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-			@Override
-			public void run() {
-				for(int i = 0; i < topics.length; i++){
-					try { subscriptions[i].unsubscribe(); } catch (Exception e) {}
-					System.out.println("Unsubscribed from " + topics[i]);
-				}
-				consumer.stop();
-			}
-		}));
-		
-		return consumer;
-		
+	public static void main(String[] args) throws JMSException {
+		new Consumer(args[0], args[1], args[2]);
 	}
 	
-	public static void main(String[] args) throws Exception {
-		final String[] topics;
-		if (args.length < 3) {
-			System.err.println("Usage: mvn -Pconsumer package exec:java -Dexec.args=\"[Broker Address] [Bind Address] [Subscription Topic]+\"");
-			System.exit(1);
-		} else {
-			String brokerAddress = args[0];
-			String bindAddress = args[1];
-			final int topic_count = args.length - 2;
-			topics = new String[topic_count];
-			for (int i = 2; i < args.length; i++) {
-				topics[i-2] = args[i];
-			}
-			
-			final org.apache.cxf.wsn.client.Consumer consumer = new org.apache.cxf.wsn.client.Consumer(new Consumer(new Callback() {
-				@Override
-				public void notify(Element element) {
-					try {
-						System.out.println(XMLUtils.getSource(element));
-					} catch (TransformerException e) {
-						e.printStackTrace();
-						System.exit(1);
-					}
-				}
-				
-			}), bindAddress);
-			NotificationBroker broker = new NotificationBroker(brokerAddress);
-			
-			final Subscription[] subscriptions = new Subscription[topic_count];
-			for(int i=0; i<topic_count; i++){
-				subscriptions[i] = broker.subscribe(consumer, topics[i]);
-				System.out.println("Subscribed to " + topics[i]);
-			}
-			
-			Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-				@Override
-				public void run() {
-					for(int i=0; i<topic_count; i++){
-						try { subscriptions[i].unsubscribe(); } catch (Exception e) {}
-						System.out.println("Unsubscribed from " + topics[i]);
-					}
-					consumer.stop();
-				}
-			}));
-		}
-	}
-
 	private Callback callback;
 	
-	public Consumer(Callback callback) {
+	public Consumer(Callback callback, String brokerAddress, String startDateString, String endDateString) throws JMSException {
 		this.callback = callback;
+		this.startListening(brokerAddress, startDateString, endDateString);
 	}
+	
+	public Consumer(String brokerAddress, String startDateString, String endDateString) throws JMSException {
+		this.callback = new SystemOutCallback();
+		this.startListening(brokerAddress, startDateString, endDateString);
+	}
+	
+	public Consumer(Callback callback, String brokerAddress, String latString, String lonString, String rangeString) throws JMSException {
+		this.callback = callback;
+		this.startListening(brokerAddress, latString, lonString, rangeString);
+	}
+	
+	public Consumer(String brokerAddress, String latString, String lonString, String rangeString) throws JMSException {
+		this.callback = new SystemOutCallback();
+		this.startListening(brokerAddress, latString, lonString, rangeString);
+	}
+	
+	public Consumer(Callback callback, String brokerAddress, String lat1String, String lon1String, String lat2String, String lon2String) throws JMSException {
+		this.callback = callback;
+		this.startListening(brokerAddress, lat1String, lon1String, lat2String, lon2String);
+	}
+	
+	public Consumer(String brokerAddress, String lat1String, String lon1String, String lat2String, String lon2String) throws JMSException {
+		this.callback = new SystemOutCallback();
+		this.startListening(brokerAddress, lat1String, lon1String, lat2String, lon2String);
+	}
+	
+	private void startListening(String brokerAddress, String startDateString, String endDateString) throws JMSException {		
+		long startTimeSub, endTimeSub;
+		
+		try {
+			startTimeSub = javax.xml.datatype.DatatypeFactory.newInstance().newXMLGregorianCalendar(startDateString).toGregorianCalendar().getTimeInMillis() / 1000;
+		}
+		catch(DatatypeConfigurationException e) {
+			startTimeSub = Integer.MIN_VALUE;
+		}
+		
+		try {
+			endTimeSub = javax.xml.datatype.DatatypeFactory.newInstance().newXMLGregorianCalendar(endDateString).toGregorianCalendar().getTimeInMillis() / 1000;
+		}
+		catch(DatatypeConfigurationException e) {
+			endTimeSub = Integer.MAX_VALUE;
+		}
+		
+		startListening(brokerAddress, "startTime < " + endTimeSub + " AND endTime > " + startTimeSub);
+		
+	}
+	
+	private void startListening(String brokerAddress, String latString, String lonString, String rangeString) throws JMSException {		
+		double targetLat = Double.valueOf(latString);
+		double targetLon = Double.valueOf(lonString);
+		double range = Double.valueOf(rangeString);
+		double squaredRange = Math.pow(range, 2.0);
+		
+		startListening(brokerAddress, "((" + targetLat + "-lat)*(" + targetLat + "-lat))+((" + targetLon + "-lon)*(" + targetLon + "-lon))<" + squaredRange);
+	}
+	
+	private void startListening(String brokerAddress, String lat1String, String lon1String, String lat2String, String lon2String) throws JMSException {
+		double lat1 = Double.valueOf(lat1String);
+		double lon1 = Double.valueOf(lon1String);
+		double lat2 = Double.valueOf(lat2String);
+		double lon2 = Double.valueOf(lon2String);
 
-	@Override
-	public void notify(NotificationMessageHolderType message) {
-		Object o = message.getMessage().getAny();
-		if (o instanceof Element) {
-			callback.notify((Element) o);
+		startListening(brokerAddress, "lat>" + lat1 + " AND lat<" + lat2 + " AND lon>" + lon1 + " AND lon<" + lon2);
+	}
+	
+	private void startListening(String brokerAddress, String sql) throws JMSException {
+		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(brokerAddress);
+		Connection connection = connectionFactory.createConnection();
+		connection.start();
+		Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+		Destination destination = session.createQueue("AES");
+		
+		MessageConsumer consumer = session.createConsumer(destination, sql);
+		
+		Message message = consumer.receive(60000);
+
+		if (message instanceof TextMessage) {
+			callback.receiveMessage((TextMessage) message);
+		}
+
+		consumer.close();
+		session.close();
+		connection.close();
+	}
+	
+	public static interface Callback {
+		public void receiveMessage(TextMessage message) throws JMSException;
+	}
+	
+	private static class SystemOutCallback implements Callback {
+		@Override
+		public void receiveMessage(TextMessage message) throws JMSException {
+			System.out.println(message.getText());
 		}
 	}
 }

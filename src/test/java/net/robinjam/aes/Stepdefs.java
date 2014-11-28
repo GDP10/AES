@@ -3,9 +3,13 @@ package net.robinjam.aes;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.cxf.wsn.services.Service;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import javax.jms.JMSException;
+import javax.jms.TextMessage;
+
+import net.robinjam.aes.Consumer.Callback;
+
+import org.apache.activemq.broker.BrokerService;
+import org.junit.Assert;
 
 import cucumber.api.java.After;
 import cucumber.api.java.en.And;
@@ -13,114 +17,130 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-
-
 public class Stepdefs {
+
+	private static final String BROKER_ADDRESS = "tcp://localhost:61616";
+
+	private TestCallback consumerCallback;
+	private BrokerService broker;
 	
-	protected static class NotificationHandler implements Consumer.Callback {
-		
-		public final List<Element> notifications = new ArrayList<Element>();
+	private static class TestCallback implements Callback {
+		public List<String> messages = new ArrayList<String>();
 		
 		@Override
-		public void notify(Element o) {
-			this.notifications.add(o);
+		public void receiveMessage(TextMessage message) throws JMSException {
+			this.messages.add(message.getText());
 		}
-		
 	}
 	
-	private String brokerAddress;
-	private NotificationHandler notificationHandler;
-
 	@Given("^a broker is running$")
 	public void broker_is_running() throws Exception {
-		
-		Runnable broker = new Runnable() {
+		broker = new BrokerService();
+		broker.addConnector("tcp://localhost:61616");
+		broker.start();
+	}
+	
+	@When("^I start a consumer with a temporal range of \"(.+)\"$")
+	public void start_a_consumer(final List<String> consumerTimes) throws JMSException {
+		Runnable consumerRunnable = new Runnable() {
 			
 			@Override
 			public void run() {
+				consumerCallback = new TestCallback();
 				try {
-					new Service(new String[]{}).start();
-				} catch (Exception e) {
+					new Consumer(consumerCallback, BROKER_ADDRESS, consumerTimes.get(0), consumerTimes.get(1));
+				} catch (JMSException e) {
 					e.printStackTrace();
-					System.exit(1);
 				}
 			}
 		};
 		
-		Thread brokerThread = new Thread(broker);
-		brokerThread.start();
-		
+		Thread consumerThread = new Thread(consumerRunnable);
+		consumerThread.start();
 	}
 	
-	@When("^I start a consumer with topics \"(.+)\"$")
-	public void start_a_consumer(final List<String> topics) throws Exception {
-
-		brokerAddress = "http://localhost:9000/wsn/NotificationBroker";
-		String bindAddress = "http://localhost:9001/TestConsumer";
-		
-		notificationHandler = new NotificationHandler();
-		
-		Consumer.getNew(brokerAddress, bindAddress, topics.toArray(new String[topics.size()]), notificationHandler);
-		
-	}
-	
-	@And("^I start a producer with xml \".+.xml\"$")
-	public void start_a_producer() throws Exception {
-		
-		Producer producer = new Producer(brokerAddress);
-		
-		producer.sendXML(Stepdefs.class.getResourceAsStream("/delta.xml"));
-		
-		Thread.sleep(1000);
-	}
-
-	@Then("^the consumer receives events with locations \"(.+)\"$")
-	public void consumer_receives_events(List<String> topics) throws Exception {
-		System.err.println("Received Messages " + notificationHandler.notifications.size());
-		
-		for(int i = 0; i < topics.size(); i++) {
+	@When("^I start a consumer with a latitude of \"(.*?)\", a longitude of \"(.*?)\" and a range of \"(.*?)\"$")
+	public void start_a_consumer(final String lat, final String lon, final String range) throws JMSException {
+		Runnable consumerRunnable = new Runnable() {
 			
-			String topic = topics.get(i);
-			boolean found = false;
-			
-			for(Element element:notificationHandler.notifications) {
-				NodeList elementsByTagName = element.getElementsByTagNameNS("http://www.aixm.aero/schema/5.1/event", "location");
-				
-				if(topic.equals(elementsByTagName.item(0).getTextContent())) {
-					found = true;
-					break;
+			@Override
+			public void run() {
+				consumerCallback = new TestCallback();
+				try {
+					new Consumer(consumerCallback, BROKER_ADDRESS, lat, lon, range);
+				} catch (JMSException e) {
+					e.printStackTrace();
 				}
 			}
-			
-			org.junit.Assert.assertTrue(found);
-		}
+		};
 		
+		Thread consumerThread = new Thread(consumerRunnable);
+		consumerThread.start();
+	}
+	
+	@When("^I start a consumer with a bounding box with top left co-ordinates \"(.*?)\",\"(.*?)\" and bottom right co-ordinates \"(.*?)\",\"(.*?)\"$")
+	public void start_a_consumer(final String lat1, final String lon1, final String lat2, final String lon2) throws JMSException {
+		Runnable consumerRunnable = new Runnable() {
+			
+			@Override
+			public void run() {
+				consumerCallback = new TestCallback();
+				try {
+					new Consumer(consumerCallback, BROKER_ADDRESS, lat1, lon1, lat2, lon2);
+				} catch (JMSException e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		
+		Thread consumerThread = new Thread(consumerRunnable);
+		consumerThread.start();
+	}
+	
+	@And("^I start a producer with xml \"(.+)\"$")
+	public void start_a_producer(List<String> notamFiles) throws Exception {
+		new Producer(BROKER_ADDRESS, Stepdefs.class.getResourceAsStream(notamFiles.get(0)));
+	}
+
+	@Then("^the consumer receives events with location \"(.+)\"$")
+	public void consumer_receives_events(List<String> locations) throws Exception {
+		String messageFound;
+		
+		for(String location:locations) {
+			
+			messageFound = "";
+			
+			for(String message:consumerCallback.messages) {
+				
+				if(message.contains(location))
+					messageFound = location;
+				
+			}
+			
+			Assert.assertEquals(location, messageFound);
+		}
 	}
 	
 	@And("^the consumer does not receive an event with location \"(.+)\"$")
-	public void consumer_doesnt_receive_event(List<String> topics) throws Exception {
-		System.err.println("Received Messages " + notificationHandler.notifications.size());
+	public void consumer_doesnt_receive_event(List<String> locations) throws Exception {
+		String messageFound;
 		
-		for(int i = 0; i < topics.size(); i++) {
+		for(String location:locations) {
+			messageFound = "";
 			
-			String topic = topics.get(i);
-			boolean found = false;
-			
-			for(Element element:notificationHandler.notifications) {
-				NodeList elementsByTagName = element.getElementsByTagNameNS("http://www.aixm.aero/schema/5.1/event", "location");
-				
-				if(topic.equals(elementsByTagName.item(0).getTextContent())) {
-					found = true;
-					break;
-				}
+			for(String message:consumerCallback.messages) {
+				if(message.contains(location))
+					messageFound = location;
 			}
-			
-			org.junit.Assert.assertFalse(found);
+			Assert.assertNotEquals(location, messageFound);
 		}
 	}
 	
 	@After
-	public void end() {
+	public void end() throws Exception {
+		System.out.println("END");
+		if(broker != null)
+			broker.stop();
 	}
 	
 }
