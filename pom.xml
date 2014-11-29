@@ -45,6 +45,28 @@
 				<artifactId>activemq-maven-plugin</artifactId>
 				<version>5.10.0</version>
 			</plugin>
+
+			<plugin>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-codegen-plugin</artifactId>
+				<version>3.0.2</version>
+				<executions>
+					<execution>
+						<id>generate-sources</id>
+						<phase>generate-sources</phase>
+						<configuration>
+							<wsdlOptions>
+								<wsdlOption>
+									<wsdl>http://docs.oasis-open.org/wsn/brw-2.wsdl</wsdl>
+								</wsdlOption>
+							</wsdlOptions>
+						</configuration>
+						<goals>
+							<goal>wsdl2java</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
