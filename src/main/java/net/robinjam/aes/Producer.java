@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.List;
-import java.util.Random;
 
 import javax.jms.Connection;
 import javax.jms.DeliveryMode;
