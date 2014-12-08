@@ -26,6 +26,11 @@
 				<exec.mainClass>net.robinjam.aes.Consumer</exec.mainClass>
 			</properties>
 		</profile>
+		
+		<profile>
+			<id>broker</id>
+			<packaging>war</packaging>
+		</profile>
 	</profiles>
 
 	<build>
@@ -67,6 +72,12 @@
 					</execution>
 				</executions>
 			</plugin>
+			
+			<plugin>
+		      	<groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-war-plugin</artifactId>
+		        <version>2.5</version>	        
+		    </plugin>
 		</plugins>
 	</build>
 
