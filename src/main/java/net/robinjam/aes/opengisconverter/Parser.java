@@ -1,7 +1,7 @@
 package net.robinjam.aes.opengisconverter;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -11,6 +11,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 public class Parser {
@@ -19,11 +20,14 @@ public class Parser {
 		System.out.println(new Parser().parse("testfilter.xml"));
 	}
 	
-	public String parse(String path) {
+	public String parse(String xml) {
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
-			Document doc = db.parse(new File(path));
+			InputSource is = new InputSource();
+			is.setCharacterStream(new StringReader(xml));
+			
+			Document doc = db.parse(is);
 			NodeList nList = doc.getElementsByTagName("ogc:Filter");
 
 			for (int temp = 0; temp < nList.getLength(); temp++) {
