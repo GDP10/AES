@@ -57,7 +57,7 @@
 						<configuration>
 							<wsdlOptions>
 								<wsdlOption>
-									<wsdl>http://robinjam.net/aes/wsn.wsdl</wsdl>
+									<wsdl>http://docs.oasis-open.org/wsn/brw-2.wsdl</wsdl>
 								</wsdlOption>
 							</wsdlOptions>
 						</configuration>
