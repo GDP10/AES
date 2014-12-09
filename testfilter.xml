@@ -1,0 +1,9 @@
+<ogc:Filter>
+	<ogc:BBOX>
+		<ogc:PropertyName>Geometry</ogc:PropertyName>
+		<gml:Envelope srsName="http://www.opengis.net/gml/srs/epsg.xml#63266405">
+			<gml:lowerCorner>13.0983 31.5899</gml:lowerCorner>
+			<gml:upperCorner>35.5472 42.8143</gml:upperCorner>
+		</gml:Envelope>
+	</ogc:BBOX>
+</ogc:Filter> 
