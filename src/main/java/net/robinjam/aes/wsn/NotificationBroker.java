@@ -1,97 +1,119 @@
 package net.robinjam.aes.wsn;
 
+import java.util.List;
 import java.util.logging.Logger;
 
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.jms.Queue;
+import javax.jms.Session;
+import javax.xml.namespace.QName;
+import javax.xml.ws.wsaddressing.W3CEndpointReference;
+
+import org.apache.activemq.ActiveMQConnectionFactory;
+import org.oasis_open.docs.wsn.b_2.GetCurrentMessage;
+import org.oasis_open.docs.wsn.b_2.GetCurrentMessageResponse;
+import org.oasis_open.docs.wsn.b_2.Notify;
+import org.oasis_open.docs.wsn.b_2.Subscribe;
+import org.oasis_open.docs.wsn.b_2.SubscribeResponse;
+import org.oasis_open.docs.wsn.br_2.RegisterPublisher;
+import org.oasis_open.docs.wsn.br_2.RegisterPublisherResponse;
+import org.oasis_open.docs.wsn.brw_2.PublisherRegistrationFailedFault;
+import org.oasis_open.docs.wsn.brw_2.PublisherRegistrationRejectedFault;
+import org.oasis_open.docs.wsn.bw_2.InvalidFilterFault;
+import org.oasis_open.docs.wsn.bw_2.InvalidMessageContentExpressionFault;
+import org.oasis_open.docs.wsn.bw_2.InvalidProducerPropertiesExpressionFault;
+import org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault;
+import org.oasis_open.docs.wsn.bw_2.MultipleTopicsSpecifiedFault;
+import org.oasis_open.docs.wsn.bw_2.NoCurrentMessageOnTopicFault;
+import org.oasis_open.docs.wsn.bw_2.NotificationConsumer;
+import org.oasis_open.docs.wsn.bw_2.NotifyMessageNotSupportedFault;
+import org.oasis_open.docs.wsn.bw_2.SubscribeCreationFailedFault;
+import org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault;
+import org.oasis_open.docs.wsn.bw_2.TopicNotSupportedFault;
+import org.oasis_open.docs.wsn.bw_2.UnacceptableInitialTerminationTimeFault;
+import org.oasis_open.docs.wsn.bw_2.UnrecognizedPolicyRequestFault;
+import org.oasis_open.docs.wsn.bw_2.UnsupportedPolicyRequestFault;
+import org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault;
+import org.w3c.dom.Element;
+
 @javax.jws.WebService(
-                      serviceName = "WS-BrokeredNotification",
-                      targetNamespace = "http://docs.oasis-open.org/wsn/br-2",
-                      wsdlLocation = "http://docs.oasis-open.org/wsn/brw-2.wsdl",
-                      endpointInterface = "org.oasis_open.docs.wsn.brw_2.NotificationBroker")
-                      
+	serviceName = "NotificationBrokerService",
+	portName = "NotificationBrokerPort",
+	targetNamespace = "http://robinjam.net/aes/wsn",
+	wsdlLocation = "http://robinjam.net/aes/wsn.wsdl",
+	endpointInterface = "org.oasis_open.docs.wsn.brw_2.NotificationBroker"
+)
 public class NotificationBroker implements org.oasis_open.docs.wsn.brw_2.NotificationBroker {
 
-    private static final Logger LOG = Logger.getLogger(NotificationBroker.class.getName());
+	private static final Logger LOG = Logger.getLogger(NotificationBroker.class.getName());
+	
+	private static final String broker_uri = "tcp://localhost:61616";
+	
+	private final Connection connection;
+	private final Session session;
+	private final Queue queue;
+	
+	public NotificationBroker() throws JMSException {
+		ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(broker_uri);
+		connection = connectionFactory.createConnection();
+		connection.start();
+		session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+		queue = session.createQueue("AES");
+		// TODO: close connection on exit
+	}
 
-    /* (non-Javadoc)
-     * @see org.oasis_open.docs.wsn.brw_2.NotificationBroker#notify(org.oasis_open.docs.wsn.b_2.Notify  notify )*
-     */
-    public void notify(org.oasis_open.docs.wsn.b_2.Notify notify) { 
-        LOG.info("Executing operation notify");
-        System.out.println(notify);
-        try {
-        } catch (java.lang.Exception ex) {
-            ex.printStackTrace();
-            throw new RuntimeException(ex);
-        }
-    }
+	public void notify(Notify notify) {
+		throw new UnsupportedOperationException();
+	}
 
-    /* (non-Javadoc)
-     * @see org.oasis_open.docs.wsn.brw_2.NotificationBroker#getCurrentMessage(org.oasis_open.docs.wsn.b_2.GetCurrentMessage  getCurrentMessageRequest )*
-     */
-    public org.oasis_open.docs.wsn.b_2.GetCurrentMessageResponse getCurrentMessage(org.oasis_open.docs.wsn.b_2.GetCurrentMessage getCurrentMessageRequest) throws org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault , org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault , org.oasis_open.docs.wsn.bw_2.NoCurrentMessageOnTopicFault , org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault , org.oasis_open.docs.wsn.bw_2.TopicNotSupportedFault , org.oasis_open.docs.wsn.bw_2.MultipleTopicsSpecifiedFault    { 
-        LOG.info("Executing operation getCurrentMessage");
-        System.out.println(getCurrentMessageRequest);
-        try {
-            org.oasis_open.docs.wsn.b_2.GetCurrentMessageResponse _return = null;
-            return _return;
-        } catch (java.lang.Exception ex) {
-            ex.printStackTrace();
-            throw new RuntimeException(ex);
-        }
-        //throw new org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault("ResourceUnknownFault...");
-        //throw new org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault("InvalidTopicExpressionFault...");
-        //throw new org.oasis_open.docs.wsn.bw_2.NoCurrentMessageOnTopicFault("NoCurrentMessageOnTopicFault...");
-        //throw new org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault("TopicExpressionDialectUnknownFault...");
-        //throw new org.oasis_open.docs.wsn.bw_2.TopicNotSupportedFault("TopicNotSupportedFault...");
-        //throw new org.oasis_open.docs.wsn.bw_2.MultipleTopicsSpecifiedFault("MultipleTopicsSpecifiedFault...");
-    }
+	public GetCurrentMessageResponse getCurrentMessage(GetCurrentMessage getCurrentMessageRequest) throws ResourceUnknownFault, InvalidTopicExpressionFault, NoCurrentMessageOnTopicFault, TopicExpressionDialectUnknownFault, TopicNotSupportedFault, MultipleTopicsSpecifiedFault {
+		throw new UnsupportedOperationException();
+	}
 
-    /* (non-Javadoc)
-     * @see org.oasis_open.docs.wsn.brw_2.NotificationBroker#registerPublisher(org.oasis_open.docs.wsn.br_2.RegisterPublisher  registerPublisherRequest )*
-     */
-    public org.oasis_open.docs.wsn.br_2.RegisterPublisherResponse registerPublisher(org.oasis_open.docs.wsn.br_2.RegisterPublisher registerPublisherRequest) throws org.oasis_open.docs.wsn.bw_2.UnacceptableInitialTerminationTimeFault , org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault , org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault , org.oasis_open.docs.wsn.brw_2.PublisherRegistrationFailedFault , org.oasis_open.docs.wsn.bw_2.TopicNotSupportedFault , org.oasis_open.docs.wsn.brw_2.PublisherRegistrationRejectedFault    { 
-        LOG.info("Executing operation registerPublisher");
-        System.out.println(registerPublisherRequest);
-        try {
-            org.oasis_open.docs.wsn.br_2.RegisterPublisherResponse _return = null;
-            return _return;
-        } catch (java.lang.Exception ex) {
-            ex.printStackTrace();
-            throw new RuntimeException(ex);
-        }
-        //throw new org.oasis_open.docs.wsn.bw_2.UnacceptableInitialTerminationTimeFault("UnacceptableInitialTerminationTimeFault...");
-        //throw new org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault("ResourceUnknownFault...");
-        //throw new org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault("InvalidTopicExpressionFault...");
-        //throw new PublisherRegistrationFailedFault("PublisherRegistrationFailedFault...");
-        //throw new org.oasis_open.docs.wsn.bw_2.TopicNotSupportedFault("TopicNotSupportedFault...");
-        //throw new PublisherRegistrationRejectedFault("PublisherRegistrationRejectedFault...");
-    }
+	public RegisterPublisherResponse registerPublisher(RegisterPublisher registerPublisherRequest) throws UnacceptableInitialTerminationTimeFault, ResourceUnknownFault, InvalidTopicExpressionFault, PublisherRegistrationFailedFault, TopicNotSupportedFault, PublisherRegistrationRejectedFault {
+		throw new UnsupportedOperationException();
+	}
 
-    /* (non-Javadoc)
-     * @see org.oasis_open.docs.wsn.brw_2.NotificationBroker#subscribe(org.oasis_open.docs.wsn.b_2.Subscribe  subscribeRequest )*
-     */
-    public org.oasis_open.docs.wsn.b_2.SubscribeResponse subscribe(org.oasis_open.docs.wsn.b_2.Subscribe subscribeRequest) throws org.oasis_open.docs.wsn.bw_2.NotifyMessageNotSupportedFault , org.oasis_open.docs.wsn.bw_2.UnacceptableInitialTerminationTimeFault , org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault , org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault , org.oasis_open.docs.wsn.bw_2.InvalidMessageContentExpressionFault , org.oasis_open.docs.wsn.bw_2.TopicNotSupportedFault , org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault , org.oasis_open.docs.wsn.bw_2.InvalidProducerPropertiesExpressionFault , org.oasis_open.docs.wsn.bw_2.SubscribeCreationFailedFault , org.oasis_open.docs.wsn.bw_2.UnrecognizedPolicyRequestFault , org.oasis_open.docs.wsn.bw_2.InvalidFilterFault , org.oasis_open.docs.wsn.bw_2.UnsupportedPolicyRequestFault    { 
-        LOG.info("Executing operation subscribe");
-        System.out.println(subscribeRequest);
-        try {
-            org.oasis_open.docs.wsn.b_2.SubscribeResponse _return = null;
-            return _return;
-        } catch (java.lang.Exception ex) {
-            ex.printStackTrace();
-            throw new RuntimeException(ex);
-        }
-        //throw new org.oasis_open.docs.wsn.bw_2.NotifyMessageNotSupportedFault("NotifyMessageNotSupportedFault...");
-        //throw new org.oasis_open.docs.wsn.bw_2.UnacceptableInitialTerminationTimeFault("UnacceptableInitialTerminationTimeFault...");
-        //throw new org.oasis_open.docs.wsrf.rw_2.ResourceUnknownFault("ResourceUnknownFault...");
-        //throw new org.oasis_open.docs.wsn.bw_2.InvalidTopicExpressionFault("InvalidTopicExpressionFault...");
-        //throw new org.oasis_open.docs.wsn.bw_2.InvalidMessageContentExpressionFault("InvalidMessageContentExpressionFault...");
-        //throw new org.oasis_open.docs.wsn.bw_2.TopicNotSupportedFault("TopicNotSupportedFault...");
-        //throw new org.oasis_open.docs.wsn.bw_2.TopicExpressionDialectUnknownFault("TopicExpressionDialectUnknownFault...");
-        //throw new org.oasis_open.docs.wsn.bw_2.InvalidProducerPropertiesExpressionFault("InvalidProducerPropertiesExpressionFault...");
-        //throw new org.oasis_open.docs.wsn.bw_2.SubscribeCreationFailedFault("SubscribeCreationFailedFault...");
-        //throw new org.oasis_open.docs.wsn.bw_2.UnrecognizedPolicyRequestFault("UnrecognizedPolicyRequestFault...");
-        //throw new org.oasis_open.docs.wsn.bw_2.InvalidFilterFault("InvalidFilterFault...");
-        //throw new org.oasis_open.docs.wsn.bw_2.UnsupportedPolicyRequestFault("UnsupportedPolicyRequestFault...");
-    }
+	public SubscribeResponse subscribe(Subscribe subscribeRequest) throws NotifyMessageNotSupportedFault, UnacceptableInitialTerminationTimeFault, ResourceUnknownFault, InvalidTopicExpressionFault, InvalidMessageContentExpressionFault, TopicNotSupportedFault, TopicExpressionDialectUnknownFault, InvalidProducerPropertiesExpressionFault, SubscribeCreationFailedFault, UnrecognizedPolicyRequestFault, InvalidFilterFault, UnsupportedPolicyRequestFault {
+		List<Object> filters = subscribeRequest.getFilter().getAny();
+		// TODO: throw exception if wrong number of filters
+		Element filter = (Element) filters.get(0);
+		//QName filterType = new QName(filter.getNamespaceURI(), filter.getLocalName());
+		//if (!filterType.equals(new QName("TODO: add namespace here", "Filter"))) {
+		//	throw new TopicExpressionDialectUnknownFault(); // TODO: is this correct?
+		//}
+		
+		String selector = filterToSelector(filter);
+		LOG.info(selector);
+		W3CEndpointReference consumerReference = subscribeRequest.getConsumerReference();
+		LOG.info(consumerReference.toString());
+		NotificationConsumer notificationConsumer = consumerReference.getPort(NotificationConsumer.class);
+		LOG.info("Got consumer reference");
+		JmsConsumer jmsConsumer = new JmsConsumer(notificationConsumer);
+		try {
+			MessageConsumer c = session.createConsumer(queue, selector);
+			c.setMessageListener(jmsConsumer);
+		} catch (JMSException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+		SubscribeResponse subscribeResponse = new SubscribeResponse();
+		return subscribeResponse;
+	}
+	
+	private String filterToSelector(Element filter) {
+		String[] lowerCornerStr = filter.getElementsByTagNameNS("http://www.opengis.net/gml", "lowerCorner").item(0).getTextContent().split("\\s+");
+		float[] lowerCorner = {Float.valueOf(lowerCornerStr[0]), Float.valueOf(lowerCornerStr[1])};
+		String[] upperCornerStr = filter.getElementsByTagNameNS("http://www.opengis.net/gml", "upperCorner").item(0).getTextContent().split("\\s+");
+		float[] upperCorner = {Float.valueOf(upperCornerStr[0]), Float.valueOf(upperCornerStr[1])};
+		
+		return "lat<" + upperCorner[0] + " AND lat>" + lowerCorner[0] + " AND lon>" + lowerCorner[1] + " AND lon<" + upperCorner[1];
+
+	}
 
 }
