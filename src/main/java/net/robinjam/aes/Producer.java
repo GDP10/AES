@@ -2,6 +2,7 @@ package net.robinjam.aes;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -30,7 +31,7 @@ import org.xml.sax.SAXException;
 public class Producer {
 	
 	public static void main(String[] args) throws JMSException, SAXException, IOException, ParserConfigurationException, TransformerException {
-		new Producer(args[0], Producer.class.getResourceAsStream(args[1]));
+		new Producer(args[0], new FileInputStream(args[1]));
 	}
 	
 	public Producer(String brokerAddress, InputStream inputStreamMaster) throws JMSException, SAXException, IOException, ParserConfigurationException, TransformerException {
